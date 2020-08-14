@@ -8,6 +8,9 @@ from xml.etree.ElementTree import Element, SubElement, ElementTree
 load_json_path = 'data_cityscape/gt_fine/train'
 save_xml_path = 'data_cityscape/gt_bbox'
 
+load_json_path = '/data/cityscape/gt_fine/gtFine/train'
+save_xml_path = '/data/cityscape/gt_bbox'
+
 
 if __name__ == "__main__":
     anno_json_list = glob.glob(osp.join(load_json_path, '*/*.json'))
@@ -15,6 +18,7 @@ if __name__ == "__main__":
     for anno_mask in anno_json_list:
         fn_element = anno_mask.split('/')[-1].split('.')[0].split('_')[0:3]
         file_name = fn_element[0] + '_' + fn_element[1] + '_' + fn_element[2] + '_leftImg8bit'
+        file_folder = fn_element[0]
 
         with open(anno_mask) as json_file:          # For Images
             json_data = json.load(json_file)
@@ -82,4 +86,8 @@ if __name__ == "__main__":
                     SubElement(bbox, 'xmax').text = str(x_max)
                     SubElement(bbox, 'ymax').text = str(y_max)
             tree = ElementTree(root)
-            tree.write(save_xml_path+'/{}.xml'.format(file_name), encoding='utf-8')
+            save_path_dir = save_xml_path+'/'+file_folder
+            if not osp.exists(save_path_dir):
+                os.makedirs(save_path_dir)
+
+            tree.write(save_path_dir+'/{}.xml'.format(file_name), encoding='utf-8')
