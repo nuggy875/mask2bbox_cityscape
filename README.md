@@ -10,6 +10,7 @@ https://www.cityscapes-dataset.com/dataset-overview/#class-definitions
 - car + truck -> car
 - bus
 - motorcycle -> motorbike
+ignore else classes of mask
 
 5 classes [person, bicycle, car, bus, motorbike]
 same with RTTS dataset from RESIDE-beta
