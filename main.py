@@ -5,18 +5,18 @@ import json
 from xml.etree.ElementTree import Element, SubElement, ElementTree
 
 
+load_json_path = 'data_cityscape/gt_fine/train'
+save_xml_path = 'data_cityscape/gt_bbox'
+
+
 if __name__ == "__main__":
+    anno_json_list = glob.glob(osp.join(load_json_path, '*/*.json'))
 
-    anno_mask_path = 'data_cityscape/gt_fine/train'
-    anno_mask_list = glob.glob(osp.join(anno_mask_path, '*/*.json'))
-    anno_mask_path_test = 'data_cityscape/gt_fine/train/acchen/aachen_000000_000019_gtFine_polygons.json'
+    for anno_mask in anno_json_list:
+        fn_element = anno_mask.split('/')[-1].split('.')[0].split('_')[0:3]
+        file_name = fn_element[0] + '_' + fn_element[1] + '_' + fn_element[2] + '_leftImg8bit'
 
-    for anno_mask in anno_mask_list:
-        # print(anno_mask)
-        file_name = anno_mask.split('/')[-1].split('.')[0]
-        print(file_name)
-        # 이미지에 대해서
-        with open(anno_mask) as json_file:
+        with open(anno_mask) as json_file:          # For Images
             json_data = json.load(json_file)
 
             img_height = json_data['imgHeight']     # Image Height
@@ -27,7 +27,7 @@ if __name__ == "__main__":
             # Make XML
             root = Element('annotation')
             SubElement(root, 'folder').text = 'cityscape_hazy'
-            SubElement(root, 'filename').text = 'test.png'    ## 수정
+            SubElement(root, 'filename').text = file_name + '.png'    ## 수정
 
             size = SubElement(root, 'size')
             SubElement(size, 'width').text = str(img_width)
@@ -36,15 +36,13 @@ if __name__ == "__main__":
 
             SubElement(root, 'segmented').text = '0'
 
-            # 물체들에 대해서
-            for i, obj in enumerate(img_objects):
+            for i, obj in enumerate(img_objects):   # For Objects
                 x_min = img_width
                 y_min = img_height
                 x_max = 0
                 y_max = 0
-                
-                # 물체의 Polygon 들에 대해서
-                for inf in obj['polygon']:
+
+                for inf in obj['polygon']:          # For Polygons in Objects
                     x = inf[0]
                     y = inf[1]
                     x_min = min(x_min, x)
@@ -54,8 +52,8 @@ if __name__ == "__main__":
 
                 # print('min({}, {}), max({}, {}), width:{}, height:{}'.format(x_min, y_min, x_max, y_max, x_max-x_min, y_max-y_min))
 
-                class_usage=True
                 # Make Bounding Box
+                class_usage=True
                 if obj['label']=='person' or obj['label']=='rider':
                     obj_name = 'person'
                 elif obj['label']=='bicycle':
@@ -84,4 +82,4 @@ if __name__ == "__main__":
                     SubElement(bbox, 'xmax').text = str(x_max)
                     SubElement(bbox, 'ymax').text = str(y_max)
             tree = ElementTree(root)
-            tree.write('data_cityscape/test.xml', encoding='utf-8')
+            tree.write(save_xml_path+'/{}.xml'.format(file_name), encoding='utf-8')
