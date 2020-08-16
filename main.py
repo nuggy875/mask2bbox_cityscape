@@ -72,15 +72,15 @@ if __name__ == "__main__":
                     class_usage=False
                     
                 if class_usage:
-                    obj_bnbbox = [x_min, y_min, x_max, y_max]
-                    # print('obj_name:{}, obj_bnbbox:{}'.format(obj_name, obj_bnbbox))
+                    obj_bndbox = [x_min, y_min, x_max, y_max]
+                    # print('obj_name:{}, obj_bndbox:{}'.format(obj_name, obj_bndbox))
                     
                     obj = SubElement(root, 'object')
                     SubElement(obj, 'name').text = obj_name
                     SubElement(obj, 'pose').text = 'Unspecified'
                     SubElement(obj, 'truncated').text = '0'
                     SubElement(obj, 'difficult').text = '0'
-                    bbox = SubElement(obj, 'bnbbox')
+                    bbox = SubElement(obj, 'bndbox')
                     SubElement(bbox, 'xmin').text = str(x_min)
                     SubElement(bbox, 'ymin').text = str(y_min)
                     SubElement(bbox, 'xmax').text = str(x_max)
